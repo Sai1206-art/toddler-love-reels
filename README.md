@@ -12,132 +12,176 @@ Each generated script includes:
 
 ## ✨ Features
 
-- **30-day rotating content calendar** — each day has a pre-planned theme, setting, mood, and emotional arc
-- **Consistent characters** — Aarav (the mini businessman boy) and Anaya (the pink dress girl) in every reel
-- **Powered by Google Gemini 2.0 Flash** — 100% free (1,500 requests/day free tier, you use 1/day)
-- **Automated via GitHub Actions** — runs daily at 10:30 AM IST, commits the script to the repo automatically
-- **Manual trigger** — generate any day's script on-demand
-- **Plain text output** — easy to read, easy to feed into your video pipeline
+- **30-day rotating content calendar** — each day has a pre-planned theme, setting, mood, emotional arc, and vibe
+- **Consistent characters** — Aarav (boy) & Anaya (girl), same look every reel
+- **Gemini 2.0 Flash** — free, creative, fast
+- **GitHub Actions automation** — runs daily at 10:30 AM IST, or trigger manually
+- **Plain text output** — ready to feed into your video pipeline
+- **$0 cost** — entirely free tier
 
 ---
 
 ## 📂 Project Structure
 
 ```
-toddler_love_reels/
-├── config.py                          # Content calendar, characters, reel specs
-├── generate_prompt.py                 # Main script — calls Gemini, generates script
-├── output/                            # Generated scripts land here
-├── .gemini_api_key                    # Your API key (gitignored, not committed)
-├── .github/
-│   └── workflows/
-│       └── daily_generate.yml         # GitHub Actions — daily auto-run
-├── requirements.txt                   # Python deps
-├── .gitignore
-└── README.md
+toddler-love-reels/
+├── config.py              # Content calendar (30 days), character templates, LLM config
+├── generate_prompt.py     # Main script — calls Gemini, generates script, saves output
+├── daily_generate.yml     # GitHub Actions workflow (move to .github/workflows/ — see Setup)
+├── requirements.txt       # Python dependencies (just `requests`)
+├── README.md              # This file
+└── output/                # Generated scripts land here
 ```
 
 ---
 
-## 🚀 Quick Start
+## 🚀 Setup
 
 ### 1. Get a free Gemini API key
-1. Go to [Google AI Studio](https://aistudio.google.com/app/apikey)
-2. Click **Create API Key**
+1. Go to [Google AI Studio](https://aistudio.google.com/apikey)
+2. Click "Create API key"
 3. Copy the key
 
-### 2. Install
+### 2. Clone the repo
 ```bash
-git clone <your-repo-url>
-cd toddler_love_reels
+git clone https://github.com/Sai1206-art/toddler-love-reels.git
+cd toddler-love-reels
+```
+
+### 3. Set your Gemini API key
+```bash
+# Option A: Environment variable
+export GEMINI_API_KEY="your-api-key-here"
+
+# Option B: Save to file
+echo "your-api-key-here" > .gemini_api_key
+```
+
+### 4. Install dependencies
+```bash
 pip install -r requirements.txt
 ```
 
-### 3. Set your API key
+### 5. Run it
 ```bash
-# Option A: Environment variable
-export GEMINI_API_KEY="your-key-here"
-
-# Option B: Save to file
-echo "your-key-here" > .gemini_api_key
-```
-
-### 4. Generate today's script
-```bash
+# Generate today's script
 python generate_prompt.py
+
+# Generate for a specific day (1-30)
+python generate_prompt.py --day 1
+
+# Generate for a specific date
+python generate_prompt.py --date 2026-07-22
 ```
 
-The script will be saved to `output/YYYY-MM-DD_dayNN_reel_script.txt`
+Output is saved to `output/YYYY-MM-DD_dayN_theme.txt`
 
 ---
 
-## 📅 Content Calendar
+## ⚙️ Enable GitHub Actions (Daily Automation)
 
-The 30-day calendar is defined in `config.py`. Each day has:
-- **Theme** (e.g., "First Meeting", "Rain Dance", "Boop the Nose")
-- **Setting** (e.g., "Sunny park playground", "Monsoon courtyard")
-- **Mood** (e2.g., "Curious, shy, heartwarming")
-- **Emotional Arc** (e.g., "Strangers → shy glances → first smile → holding hands")
-- **Vibe** (short creative direction)
+The workflow file `daily_generate.yml` is in the repo root (couldn't be pushed to `.github/workflows/` via API due to token scope limitations). To activate:
 
-### Generate a specific day
-```bash
-python generate_prompt.py --day 4    # Generate Day 4 (Boop the Nose)
-python generate_prompt.py --day 15   # Generate Day 15 (Puppy Love)
-```
-
-### Generate for a specific date
-```bash
-python generate_prompt.py --date 2025-02-14
-```
+1. On GitHub, create a new file at `.github/workflows/daily_generate.yml`
+2. Copy the content from `daily_generate.yml` in the repo root
+3. Delete the root copy (optional)
+4. Go to **Settings → Secrets and variables → Actions**
+5. Add a new repository secret:
+   - Name: `GEMINI_API_KEY`
+   - Value: your Gemini API key
+6. The workflow runs daily at 10:30 AM IST automatically
+7. You can also trigger it manually: **Actions tab → Daily Reel Script Generator → Run workflow**
 
 ---
 
-## ⚙️ GitHub Actions Automation
+## 📅 Content Calendar (30 Days)
 
-The repo includes a GitHub Actions workflow (`.github/workflows/daily_generate.yml`) that:
-1. Runs daily at **10:30 AM IST**
-2. Calls the generator script
-3. Auto-commits the new script to the repo
+| Day | Theme | Mood |
+|-----|-------|------|
+| 1 | First Meeting | Curious, shy, heartwarming |
+| 2 | Sharing Snacks | Generous, cute |
+| 3 | Rain Dance | Playful, romantic |
+| 4 | Tiny Promise | Emotional, hopeful |
+| 5 | Playground Chase | Energetic, fun |
+| 6 | Flower for You | Sweet, tender |
+| 7 | Matching Outfits | Funny, adorable |
+| 8 | Birthday Surprise | Joyful, surprised |
+| 9 | Hide and Seek | Mischievous, giggly |
+| 10 | First Fight & Makeup | Emotional, heartwarming |
+| 11 | Drawing Together | Creative, wholesome |
+| 12 | Tiny Dance | Rhythmic, joyful |
+| 13 | Lost & Found | Anxious → relieved, emotional |
+| 14 | Sharing Umbrella | Cozy, protective |
+| 15 | Sandcastle Promise | Dreamy, hopeful |
+| 16 | Diwali Together | Festive, bright |
+| 17 | Feeding Puppies | Compassionate, cute |
+| 18 | Tiny Letter | Nostalgic, innocent |
+| 19 | School Play | Nervous → proud, heartwarming |
+| 20 | Star Gazing | Wonder, dreamy |
+| 21 | Booped Nose | Giggly, cute |
+| 22 | Tiny Picnic | Wholesome, peaceful |
+| 23 | First Snow | Wonder, playful |
+| 24 | Magic Show | Surprised, delighted |
+| 25 | Helping Hand | Caring, sweet |
+| 26 | Music Class | Rhythmic, fun |
+| 27 | Lost Tooth | Funny, emotional |
+| 28 | Color Fight | Chaotic-fun, colorful |
+| 29 | Lullaby Goodnight | Tender, sleepy, protective |
+| 30 | Graduation Day Hug | Proud, emotional, hopeful |
 
-### Setup:
-1. Push this repo to GitHub
-2. Go to **Repo Settings → Secrets and Variables → Actions**
-3. Add a secret named `GEMINI_API_KEY` with your API key value
-4. Done! Scripts will auto-generate daily
-
-To trigger manually: **Actions tab → Daily Reel Script Generator → Run workflow**
+The calendar cycles every 30 days — on day 31, it starts back at day 1.
 
 ---
 
-## 🎬 Reel Specs
+## 🎬 What Each Script Contains
 
-| Spec | Value |
-|------|-------|
-| Duration | 32 seconds (4 × 8s scenes) |
-| Aspect Ratio | 9:16 vertical (720×1280) |
-| Platform | YouTube Shorts / Instagram Reels |
-| Animation Style | High-quality 3D CGI, Pixar/Disney-like |
+Every generated script follows this structure:
+
+```
+🎬 REEL SCRIPT: [Theme Name]
+📅 Day X | Date: YYYY-MM-DD
+⏱ Total Duration: ~32 seconds (4 scenes × 8s)
+📱 Platform: YouTube Shorts / Instagram Reels
+
+--- SCENE 1 (0-8s) ---
+🎥 Camera: [angle, movement]
+🎭 Mood: [emotion]
+📍 Setting: [location description]
+👶 Action: [what Aarav and Anaya do, step by step]
+💬 Dialogue: [Hindi dialogue in Devanagari]
+🗣 Narration: [Hindi voiceover in Devanagari]
+
+--- SCENE 2 (8-16s) ---
+[...same structure...]
+
+--- SCENE 3 (16-24s) ---
+[...same structure...]
+
+--- SCENE 4 (24-32s) ---
+[...same structure...]
+
+--- METADATA ---
+📢 Hook Line: [Hindi hook]
+#️⃣ Hashtags: [relevant hashtags]
+🎨 Visual Style: [animation description]
+🎵 Music Suggestion: [mood/type of background music]
+```
 
 ---
 
 ## 🔧 Customization
 
-### Add a new theme to the calendar
-Edit `config.py` → `CONTENT_CALENDAR` list. Add a new entry:
-```python
-{
-    "day": 31,
-    "theme": "Your New Theme",
-    "setting": "Where it happens",
-    "mood": "mood words",
-    "emotional_arc": "start → middle → end",
-    "vibe": "short creative direction"
-}
-```
+### Change the characters
+Edit `config.py` → `CHARACTERS` dict. Update names, descriptions, outfits, personalities.
 
-### Change characters
-Edit `config.py` → `CHARACTERS` dict.
+### Add/modify calendar themes
+Edit `config.py` → `CONTENT_CALENDAR` list. Each entry needs:
+- `day`: number
+- `theme`: short name
+- `setting`: location/scene description
+- `mood`: emotional tone
+- `emotional_arc`: step-by-step story progression
+- `vibe`: 3-4 word summary
 
 ### Change the AI model
 Edit `config.py` → `GEMINI_MODEL`. Options:
