@@ -64,7 +64,7 @@ pip install -r requirements.txt
 
 ### 5. Run it
 ```bash
-# Generate today's script
+# Generate today's script (from the 30-day calendar)
 python generate_prompt.py
 
 # Generate for a specific day (1-30)
@@ -72,9 +72,15 @@ python generate_prompt.py --day 1
 
 # Generate for a specific date
 python generate_prompt.py --date 2026-07-22
+
+# Generate from a CUSTOM IDEA (any idea — bypasses the calendar!)
+python generate_prompt.py --idea "Aarav and Anaya at a mango orchard, Aarav tries to pluck a mango for Anaya"
+
+# Wrap the idea in quotes if it has spaces
+python generate_prompt.py --idea "Holi celebration, Aarav puts pink color on Anaya's cheek, she chases him with a pichkari"
 ```
 
-Output is saved to `output/YYYY-MM-DD_dayN_theme.txt`
+Output is saved to `output/YYYY-MM-DD_dayN_theme.txt` (or `output/YYYY-MM-DD_custom_HASH_day00_reel_script.txt` for custom ideas).
 
 ---
 
