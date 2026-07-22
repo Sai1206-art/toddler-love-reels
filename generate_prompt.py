@@ -155,43 +155,74 @@ def build_user_prompt(day_slot, day_number):
 Write the full scene-by-scene breakdown and Hindi narration script following the format specified. Make it go viral."""
 
 
-def call_gemini(system_prompt, user_prompt, api_key):
-    """Call Gemini 2.5 Flash API."""
-    url = GEMINI_API_URL.format(model=GEMINI_MODEL, api_key=api_key)
+def build_custom_idea_prompt(idea):
+    """Build a user prompt from a free-form custom idea."""
+    return f"""Generate a reel script based on this custom idea:
 
-    payload = {
-        "system_instruction": {"parts": [{"text": system_prompt}]},
-        "contents": [{"role": "user", "parts": [{"text": user_prompt}]}],
-        "generationConfig": {
-            "temperature": 0.9,
-            "top_p": 0.95,
-            "max_output_tokens": 2048,
-        },
-    }
+## CUSTOM IDEA
+{idea}
+
+Use the characters Aarav and Anaya as defined. Create a wholesome, emotional toddler love story around this idea. If the idea specifies a setting, mood, or emotional arc, follow it. If not, invent appropriate ones that fit the idea.
+
+Write the full scene-by-scene breakdown and Hindi narration script following the format specified. Make it go viral."""
+
+
+def call_gemini(system_prompt, user_prompt, api_key):
+    """Call Gemini 2.5 Flash API with automatic continuation if truncated."""
+    url = GEMINI_API_URL.format(model=GEMINI_MODEL, api_key=api_key)
 
     headers = {"Content-Type": "application/json"}
 
-    try:
-        response = requests.post(url, json=payload, headers=headers, timeout=60)
-        response.raise_for_status()
-    except requests.exceptions.HTTPError as e:
-        print(f"Gemini API error: {e}")
-        if response.text:
-            print(f"Response: {response.text[:500]}")
-        sys.exit(1)
-    except requests.exceptions.RequestException as e:
-        print(f"Network error: {e}")
-        sys.exit(1)
+    # Build conversation that can be extended for continuation
+    contents = [{"role": "user", "parts": [{"text": user_prompt}]}]
 
-    data = response.json()
+    full_text = ""
+    max_rounds = 3  # safety limit on continuations
 
-    try:
-        text = data["candidates"][0]["content"]["parts"][0]["text"]
-    except (KeyError, IndexError):
-        print(f"Unexpected API response: {json.dumps(data, indent=2)[:500]}")
-        sys.exit(1)
+    for round_num in range(max_rounds):
+        payload = {
+            "system_instruction": {"parts": [{"text": system_prompt}]},
+            "contents": contents,
+            "generationConfig": {
+                "temperature": 0.9,
+                "top_p": 0.95,
+                "max_output_tokens": 8192,
+            },
+        }
 
-    return text
+        try:
+            response = requests.post(url, json=payload, headers=headers, timeout=90)
+            response.raise_for_status()
+        except requests.exceptions.HTTPError as e:
+            print(f"Gemini API error: {e}")
+            if response.text:
+                print(f"Response: {response.text[:500]}")
+            sys.exit(1)
+        except requests.exceptions.RequestException as e:
+            print(f"Network error: {e}")
+            sys.exit(1)
+
+        data = response.json()
+
+        try:
+            text = data["candidates"][0]["content"]["parts"][0]["text"]
+            finish_reason = data["candidates"][0].get("finishReason", "STOP")
+        except (KeyError, IndexError):
+            print(f"Unexpected API response: {json.dumps(data, indent=2)[:500]}")
+            sys.exit(1)
+
+        full_text += text
+
+        # If generation finished normally, we are done
+        if finish_reason != "MAX_TOKENS":
+            break
+
+        # Otherwise, continue the conversation
+        print(f"   (continuing generation, round {round_num + 2}...)")
+        contents.append({"role": "model", "parts": [{"text": text}]})
+        contents.append({"role": "user", "parts": [{"text": "Continue exactly where you left off. Do not repeat anything. Just finish the script from where it was cut off."}]})
+
+    return full_text
 
 
 def save_output(text, day_number, date_str):
@@ -226,7 +257,47 @@ def main():
         default=None,
         help="Force a specific calendar day (1-30). Overrides date-based selection.",
     )
+    parser.add_argument(
+        "--idea",
+        type=str,
+        default=None,
+        help="Custom idea/prompt to generate a reel script from (bypasses the calendar).",
+    )
     args = parser.parse_args()
+
+    # Custom idea mode — bypass calendar entirely
+    if args.idea:
+        idea = args.idea.strip()
+        if not idea:
+            print("Error: --idea cannot be empty.")
+            sys.exit(1)
+
+        date_str = datetime.date.today().isoformat()
+
+        print(f"📅 Date: {date_str}")
+        print(f"💡 Custom Idea Mode")
+        print(f"📝 Idea: {idea[:80]}{'...' if len(idea) > 80 else ''}")
+        print("-" * 50)
+
+        api_key = get_api_key()
+        print("🔑 Using Gemini API key: " + api_key[:4] + "..." + api_key[-4:])
+
+        system_prompt = build_system_prompt()
+        user_prompt = build_custom_idea_prompt(idea)
+
+        print("🤖 Generating script with Gemini 2.5 Flash...")
+        script_text = call_gemini(system_prompt, user_prompt, api_key)
+
+        # Save with a hash-based filename to avoid collisions
+        import hashlib
+        idea_hash = hashlib.md5(idea.encode()).hexdigest()[:8]
+        date_str = datetime.date.today().isoformat()
+        filepath = save_output(script_text, 0, f"{date_str}_custom_{idea_hash}")
+
+        print(f"✅ Script saved to: {filepath}")
+        print("-" * 50)
+        print("\n" + script_text)
+        return
 
     # Determine date
     if args.date:
