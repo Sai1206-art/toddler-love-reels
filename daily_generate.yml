@@ -1,0 +1,35 @@
+name: Daily Reel Script Generator
+
+on:
+  schedule:
+    # Runs daily at 10:30 AM IST (05:00 UTC)
+    - cron: '30 5 * * *'
+  workflow_dispatch:  # Allow manual trigger
+
+jobs:
+  generate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: pip install requests
+
+      - name: Generate today's reel script
+        env:
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+        run: python generate_prompt.py
+
+      - name: Commit and push generated script
+        run: |
+          git config user.name "GitHub Actions Bot"
+          git config user.email "actions@github.com"
+          git add output/
+          git diff --staged --quiet || git commit -m "📅 Daily reel script - $(date +%Y-%m-%d)"
+          git push
