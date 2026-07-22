@@ -1,7 +1,7 @@
 """
 Prompt Generator for Toddler Love Reels.
 
-Uses Google Gemini 2.0 Flash (free tier) to generate a full scene-by-scene
+Uses Google Gemini 2.5 Flash (free tier) to generate a full scene-by-scene
 breakdown + Hindi dialogue/narration script for a daily toddler love story reel.
 
 Output: Plain text file saved to output/ directory.
@@ -156,7 +156,7 @@ Write the full scene-by-scene breakdown and Hindi narration script following the
 
 
 def call_gemini(system_prompt, user_prompt, api_key):
-    """Call Gemini 2.0 Flash API."""
+    """Call Gemini 2.5 Flash API."""
     url = GEMINI_API_URL.format(model=GEMINI_MODEL, api_key=api_key)
 
     payload = {
@@ -267,7 +267,7 @@ def main():
     user_prompt = build_user_prompt(day_slot, day_number)
 
     # Generate
-    print("🤖 Generating script with Gemini 2.0 Flash...")
+    print("🤖 Generating script with Gemini 2.5 Flash...")
     script_text = call_gemini(system_prompt, user_prompt, api_key)
 
     # Save
