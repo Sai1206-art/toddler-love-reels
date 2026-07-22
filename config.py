@@ -6,7 +6,7 @@ Defines the content calendar, character templates, and LLM settings.
 # ──────────────────────────────────────────────────────────
 # LLM CONFIG
 # ──────────────────────────────────────────────────────────
-GEMINI_MODEL = "gemini-2.0-flash"
+GEMINI_MODEL = "gemini-2.5-flash"
 GEMINI_API_URL = "https://generativelanguage.googleapis.com/v1beta/models/{model}:generateContent?key={api_key}"
 
 # ──────────────────────────────────────────────────────────
