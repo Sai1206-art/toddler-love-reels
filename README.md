@@ -14,7 +14,7 @@ Each generated script includes:
 
 - **30-day rotating content calendar** — each day has a pre-planned theme, setting, mood, emotional arc, and vibe
 - **Consistent characters** — Aarav (boy) & Anaya (girl), same look every reel
-- **Gemini 2.0 Flash** — free, creative, fast
+- **Gemini 2.5 Flash** — free, creative, fast
 - **GitHub Actions automation** — runs daily at 10:30 AM IST, or trigger manually
 - **Plain text output** — ready to feed into your video pipeline
 - **$0 cost** — entirely free tier
@@ -185,11 +185,11 @@ Edit `config.py` → `CONTENT_CALENDAR` list. Each entry needs:
 
 ### Change the AI model
 Edit `config.py` → `GEMINI_MODEL`. Options:
-- `gemini-2.0-flash` (default, recommended)
-- `gemini-2.5-flash` (newer, check availability)
+- `gemini-2.5-flash` (default, recommended)
+- `gemini-2.0-flash` (alternative, may have quota limits)
 
 ---
 
 ## 💰 Cost
 
-**$0.00** — Gemini 2.0 Flash free tier covers 1,500 requests/day. You use 1 per day. GitHub Actions is free for public repos (2,000 min/month for private repos — this uses ~1 min/run).
+**$0.00** — Gemini 2.5 Flash free tier covers 1,500 requests/day. You use 1 per day. GitHub Actions is free for public repos (2,000 min/month for private repos — this uses ~1 min/run).
